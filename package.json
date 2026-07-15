@@ -1,0 +1,28 @@
+{
+  "name": "@neumie/pi-tool-display-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Load pi-tool-display and pi-hypa through one Pi extension API so Hypa uses the configured compact renderers.",
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
+  "scripts": {
+    "test": "tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm test"
+  },
+  "dependencies": {
+    "@hypabolic/pi-hypa": "0.1.11",
+    "pi-tool-display": "github:neumie/pi-tool-display#fix/decorate-late-tools-before-registration"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^0.80.3",
+    "@earendil-works/pi-tui": "^0.80.3",
+    "@types/node": "^24.0.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}
