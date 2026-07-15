@@ -46,7 +46,7 @@ test("Hypa tools use pi-tool-display renderers when loaded through the bridge", 
   assert.equal(typeof hypaShell.renderResult, "function");
   assert.equal(
     hypaShell.renderCall?.({ command: "git status" }, theme)?.render(120).join("\n").trim(),
-    "hypa_shell (1 arg)",
+    "hypa_shell $ git status",
   );
   assert.equal(
     hypaShell.renderResult?.(
