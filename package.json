@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Load pi-tool-display and pi-hypa through one Pi extension API so Hypa uses the configured compact renderers.",
+  "description": "Private Neumie bridge that loads the maintained pi-tool-display fork and Hypa through one Pi extension API.",
   "pi": {
     "extensions": [
       "./index.ts"
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@hypabolic/pi-hypa": "0.1.11",
-    "pi-tool-display": "github:neumie/pi-tool-display#fix/decorate-late-tools-before-registration"
+    "pi-tool-display": "git+https://github.com/neumie/pi-tool-display.git#f1a8fa16ec770b03bb5b40ef7c94fb6083fb55ce"
   },
   "devDependencies": {
     "@earendil-works/pi-coding-agent": "^0.80.3",
@@ -24,5 +24,16 @@
     "@types/node": "^24.0.0",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neumie/pi-tool-display-bridge.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "index.ts",
+    "README.md"
+  ]
 }
