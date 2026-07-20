@@ -16,11 +16,11 @@
   },
   "dependencies": {
     "@hypabolic/pi-hypa": "0.1.11",
-    "pi-tool-display": "git+https://github.com/neumie/pi-tool-display.git#5e7582bc65c57b463a8b961ddc5b72ef8d722ed7"
+    "pi-tool-display": "git+https://github.com/neumie/pi-tool-display.git#06166f38cfa5478eebbd06ebeaebbca141c814c1"
   },
   "devDependencies": {
-    "@earendil-works/pi-coding-agent": "^0.80.3",
-    "@earendil-works/pi-tui": "^0.80.3",
+    "@earendil-works/pi-coding-agent": "^0.80.10",
+    "@earendil-works/pi-tui": "^0.80.10",
     "@types/node": "^24.0.0",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"
