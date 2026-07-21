@@ -4,7 +4,7 @@ Private Neumie bridge package that loads the maintained [`pi-tool-display` fork]
 
 Pi normally gives each extension a separate API object. Sharing one instance lets `pi-tool-display` decorate Hypa tool definitions before Pi snapshots their renderers. `preserveCallRenderer: true` retains Hypa's native command/path header while replacing only verbose result bodies.
 
-The bridge also reskins Pi's built-in `/reload` placeholder as a full-width padded card with a distinct pending color. The patch is scoped to Pi's exact reload message, remains active through the reload lifecycle, and falls back to the native bordered view if Pi changes that structure or no theme is available.
+The bridge also reskins Pi's built-in `/reload` placeholder as a full-width padded card with a distinct pending color. The patch is scoped to Pi's exact reload message, remains active through the reload lifecycle, and falls back to the native bordered view if Pi changes that structure or no theme is available. While reload is active, Pi's temporary built-in footer is replaced by blank rows matching the custom session footer's announced height, preventing MCP/LSP flashes and vertical jumps until that footer reports it has mounted. Suppression is render-bounded so the stock footer fails open if the custom footer never returns.
 
 ## Installation
 

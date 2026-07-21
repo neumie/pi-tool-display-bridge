@@ -1,13 +1,19 @@
 import {
   type ExtensionAPI,
+  FooterComponent,
   UserMessageComponent,
 } from "@earendil-works/pi-coding-agent";
+import {
+  patchReloadFooterPrototype,
+  type PatchableFooterPrototype,
+} from "./reload-footer.js";
 
 export const PI_RELOAD_MESSAGE =
   "Reloading keybindings, extensions, skills, prompts, themes, and context files...";
 
 const RELOAD_CARD_MESSAGE = "Reloading Pi configuration and resources…";
-const RELOAD_CARD_PATCH_VERSION = 2;
+const SESSION_FOOTER_MOUNTED_EVENT = "pi-session-footer:mounted";
+const RELOAD_CARD_PATCH_VERSION = 3;
 const ANSI_CONTROL_SEQUENCE_PATTERN = /\x1b\[[0-?]*[ -/]*[@-~]/g;
 
 export interface ReloadCardTheme {
@@ -22,6 +28,7 @@ interface ReloadPatchState {
   version: number;
   originalRender: ReloadRender;
   getTheme(): ReloadCardTheme | undefined;
+  onReloadRender(card: object): void;
   lastTheme?: ReloadCardTheme;
 }
 
@@ -91,11 +98,13 @@ function isPiReloadContainer(value: unknown): boolean {
 export function patchReloadContainerPrototype(
   prototype: PatchableReloadContainerPrototype,
   getTheme: () => ReloadCardTheme | undefined,
+  onReloadRender: (card: object) => void = () => {},
 ): void {
   const existing = prototype.__neumieReloadCardPatch;
   if (existing?.version === RELOAD_CARD_PATCH_VERSION) {
     existing.lastTheme = getTheme() ?? existing.lastTheme;
     existing.getTheme = getTheme;
+    existing.onReloadRender = onReloadRender;
     return;
   }
   if (existing) prototype.render = existing.originalRender;
@@ -105,6 +114,7 @@ export function patchReloadContainerPrototype(
     version: RELOAD_CARD_PATCH_VERSION,
     originalRender: prototype.render,
     getTheme,
+    onReloadRender,
     lastTheme: getTheme(),
   };
   prototype.__neumieReloadCardPatch = state;
@@ -113,6 +123,7 @@ export function patchReloadContainerPrototype(
     if (!current || !isPiReloadContainer(this)) {
       return (current?.originalRender ?? state.originalRender).call(this, width);
     }
+    current.onReloadRender(this as object);
     const theme = current.getTheme() ?? current.lastTheme;
     if (!theme) return current.originalRender.call(this, width);
     current.lastTheme = theme;
@@ -130,15 +141,38 @@ export default function registerReloadCard(
   hostContainerPrototype: PatchableReloadContainerPrototype | null = Object.getPrototypeOf(
     UserMessageComponent.prototype,
   ) as PatchableReloadContainerPrototype | null,
+  hostFooterPrototype: PatchableFooterPrototype | null = FooterComponent.prototype as unknown as PatchableFooterPrototype,
 ): void {
   let activeTheme: ReloadCardTheme | undefined;
+  const footerSuppression =
+    hostFooterPrototype && typeof hostFooterPrototype.render === "function"
+      ? patchReloadFooterPrototype(hostFooterPrototype)
+      : undefined;
   const patch = () => {
     if (!hostContainerPrototype || typeof hostContainerPrototype.render !== "function") return;
-    patchReloadContainerPrototype(hostContainerPrototype, () => activeTheme);
+    patchReloadContainerPrototype(
+      hostContainerPrototype,
+      () => activeTheme,
+      (card) => footerSuppression?.showReloadCard(card),
+    );
   };
+  const unsubscribeFooterMounted = pi.events.on(
+    SESSION_FOOTER_MOUNTED_EVENT,
+    (payload) => {
+      if (!payload || typeof payload !== "object") return;
+      const rows = (payload as { rows?: unknown }).rows;
+      if (typeof rows !== "number" || !Number.isFinite(rows)) return;
+      footerSuppression?.customFooterMounted(rows);
+    },
+  );
   patch();
-  pi.on("session_start", (_event, ctx) => {
+  pi.on("session_shutdown", (event) => {
+    if (event.reason === "reload") footerSuppression?.beginReload();
+    unsubscribeFooterMounted?.();
+  });
+  pi.on("session_start", (event, ctx) => {
     activeTheme = ctx.ui.theme as unknown as ReloadCardTheme;
+    if (event.reason !== "reload") footerSuppression?.reset();
     patch();
   });
 }

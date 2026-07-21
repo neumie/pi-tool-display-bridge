@@ -71,7 +71,7 @@ test("reload patch replaces a stale versioned wrapper", () => {
   patchReloadContainerPrototype(prototype, () => plainTheme);
   const state = prototype.__neumieReloadCardPatch;
   assert.ok(state);
-  state.version = 1;
+  state.version = 2;
   const staleRender = function staleRender(): string[] {
     return ["stale outside gap"];
   };
@@ -104,18 +104,42 @@ test("reload registration preserves the last theme between runtime generations",
       return [`native:${width}`];
     },
   };
+  const footerPrototype = {
+    render() {
+      return ["stock footer"];
+    },
+  };
   const target = { children: [{ text: PI_RELOAD_MESSAGE }] };
   const fakePi = () => {
-    const sessionStartHandlers: Array<(event: unknown, ctx: unknown) => void> = [];
+    type FakeHandler = (event: unknown, ctx?: unknown) => void;
+    const sessionStartHandlers: FakeHandler[] = [];
+    const sessionShutdownHandlers: FakeHandler[] = [];
+    const mountedHandlers: Array<(payload: unknown) => void> = [];
     return {
       api: {
-        on(event: string, handler: (event: unknown, ctx: unknown) => void) {
+        events: {
+          on(event: string, handler: (payload: unknown) => void) {
+            if (event === "pi-session-footer:mounted") mountedHandlers.push(handler);
+            return () => {
+              const index = mountedHandlers.indexOf(handler);
+              if (index >= 0) mountedHandlers.splice(index, 1);
+            };
+          },
+        },
+        on(event: string, handler: FakeHandler) {
           if (event === "session_start") sessionStartHandlers.push(handler);
+          if (event === "session_shutdown") sessionShutdownHandlers.push(handler);
         },
       },
-      start(theme: ReloadCardTheme) {
+      shutdown() {
+        for (const handler of sessionShutdownHandlers) handler({ reason: "reload" });
+      },
+      mountFooter(rows: number) {
+        for (const handler of mountedHandlers) handler({ rows });
+      },
+      start(theme: ReloadCardTheme, reason: "startup" | "reload") {
         for (const handler of sessionStartHandlers) {
-          handler({ reason: "reload" }, { ui: { theme } });
+          handler({ reason }, { ui: { theme } });
         }
       },
     };
@@ -127,17 +151,31 @@ test("reload registration preserves the last theme between runtime generations",
   });
 
   const first = fakePi();
-  registerReloadCard(first.api as never, prototype);
-  first.start(themed("first"));
+  registerReloadCard(first.api as never, prototype, footerPrototype);
+  first.start(themed("first"), "startup");
   assert.ok(prototype.render.call(target, 40)[0]?.startsWith("first:"));
+  assert.deepEqual(
+    footerPrototype.render(),
+    ["", ""],
+    "card render reserves the custom footer height",
+  );
+  first.shutdown();
 
   const replacement = fakePi();
-  registerReloadCard(replacement.api as never, prototype);
+  registerReloadCard(replacement.api as never, prototype, footerPrototype);
   assert.ok(
     prototype.render.call(target, 40)[0]?.startsWith("first:"),
     "re-registration does not erase the active reload theme",
   );
+  assert.deepEqual(footerPrototype.render(), ["", ""]);
 
-  replacement.start(themed("replacement"));
+  replacement.start(themed("replacement"), "reload");
   assert.ok(prototype.render.call(target, 40)[0]?.startsWith("replacement:"));
+  assert.deepEqual(
+    footerPrototype.render(),
+    ["", ""],
+    "MCP/LSP transition keeps the same two-row footprint",
+  );
+  replacement.mountFooter(2);
+  assert.deepEqual(footerPrototype.render(), ["stock footer"]);
 });

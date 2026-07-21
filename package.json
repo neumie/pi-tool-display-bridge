@@ -42,6 +42,7 @@
   "files": [
     "index.ts",
     "reload-card.ts",
+    "reload-footer.ts",
     "README.md"
   ]
 }

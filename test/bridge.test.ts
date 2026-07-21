@@ -66,6 +66,12 @@ test("bridge decorates Hypa snapshots from explicit config and cleans intercepti
       sourceInfo: { source: "builtin", path: `<builtin:${name}>` },
     }));
     const api = {
+      events: {
+        on() {
+          return () => {};
+        },
+        emit() {},
+      },
       registerTool(tool: Tool) {
         // Model Pi snapshotting the definition during registration.
         if (tool.name === "hypa_shell") hypaShellRegistrationCount++;
