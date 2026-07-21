@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@hypabolic/pi-hypa": "0.1.11",
-    "pi-tool-display": "git+https://github.com/neumie/pi-tool-display.git#1525957884b249dbc2d3e650c4210eee8d50c88c"
+    "pi-tool-display": "git+https://github.com/neumie/pi-tool-display.git#6c819954498e6ccc70b915ffebeab64f2ab0343c"
   },
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "^0.80.10"
