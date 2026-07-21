@@ -7,7 +7,7 @@ export const PI_RELOAD_MESSAGE =
   "Reloading keybindings, extensions, skills, prompts, themes, and context files...";
 
 const RELOAD_CARD_MESSAGE = "Reloading Pi configuration and resources…";
-const RELOAD_CARD_PATCH_VERSION = 1;
+const RELOAD_CARD_PATCH_VERSION = 2;
 const ANSI_CONTROL_SEQUENCE_PATTERN = /\x1b\[[0-?]*[ -/]*[@-~]/g;
 
 export interface ReloadCardTheme {

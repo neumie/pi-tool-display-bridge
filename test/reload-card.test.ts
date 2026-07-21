@@ -4,6 +4,7 @@ import registerReloadCard, {
   PI_RELOAD_MESSAGE,
   patchReloadContainerPrototype,
   renderReloadCard,
+  type PatchableReloadContainerPrototype,
   type ReloadCardTheme,
 } from "../reload-card.ts";
 
@@ -58,6 +59,29 @@ test("reload patch changes only Pi's exact reload container and is idempotent", 
     prototype.render.call({ children: [{ text: `${PI_RELOAD_MESSAGE} changed` }] }, 40),
     ["native:40"],
     "nearby text does not broaden the patch target",
+  );
+});
+
+test("reload patch replaces a stale versioned wrapper", () => {
+  const prototype: PatchableReloadContainerPrototype = {
+    render(width: number) {
+      return [`native:${width}`];
+    },
+  };
+  patchReloadContainerPrototype(prototype, () => plainTheme);
+  const state = prototype.__neumieReloadCardPatch;
+  assert.ok(state);
+  state.version = 1;
+  const staleRender = function staleRender(): string[] {
+    return ["stale outside gap"];
+  };
+  prototype.render = staleRender;
+
+  patchReloadContainerPrototype(prototype, () => plainTheme);
+  assert.notEqual(prototype.render, staleRender);
+  assert.equal(
+    prototype.render.call({ children: [{ text: PI_RELOAD_MESSAGE }] }, 40).length,
+    4,
   );
 });
 
