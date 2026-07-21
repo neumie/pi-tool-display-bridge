@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@hypabolic/pi-hypa": "0.1.11",
-    "pi-tool-display": "git+https://github.com/neumie/pi-tool-display.git#06166f38cfa5478eebbd06ebeaebbca141c814c1"
+    "pi-tool-display": "git+https://github.com/neumie/pi-tool-display.git#347c342bf61c0bc8867f02aa2a50cc020e3ca45f"
   },
   "devDependencies": {
     "@earendil-works/pi-coding-agent": "^0.80.10",
@@ -24,6 +24,10 @@
     "@types/node": "^24.0.0",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"
+  },
+  "overrides": {
+    "brace-expansion": "5.0.7",
+    "protobufjs": "7.6.5"
   },
   "repository": {
     "type": "git",
