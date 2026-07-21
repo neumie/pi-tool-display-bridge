@@ -18,6 +18,9 @@
     "@hypabolic/pi-hypa": "0.1.11",
     "pi-tool-display": "git+https://github.com/neumie/pi-tool-display.git#1525957884b249dbc2d3e650c4210eee8d50c88c"
   },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "^0.80.10"
+  },
   "devDependencies": {
     "@earendil-works/pi-coding-agent": "^0.80.10",
     "@earendil-works/pi-tui": "^0.80.10",
@@ -38,6 +41,7 @@
   },
   "files": [
     "index.ts",
+    "reload-card.ts",
     "README.md"
   ]
 }
