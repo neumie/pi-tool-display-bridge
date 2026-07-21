@@ -15,7 +15,7 @@ npm ci --ignore-scripts
 npm run check
 ```
 
-Requires Node.js 20 or later. This package is intentionally private; install it from a local path rather than npm.
+Requires Node.js 22.19.0 or later. This package is intentionally private; install it from a local path rather than npm.
 
 Add this package to Pi settings **instead of** separately loading `pi-tool-display` or `@hypabolic/pi-hypa`:
 

@@ -34,7 +34,7 @@
     "url": "git+https://github.com/neumie/pi-tool-display-bridge.git"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.19.0"
   },
   "files": [
     "index.ts",
