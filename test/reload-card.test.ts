@@ -24,12 +24,11 @@ test("reload card matches the standardized padded card geometry", () => {
   };
 
   const lines = renderReloadCard(80, theme);
-  assert.equal(lines.length, 6);
-  assert.ok(lines.slice(0, 5).every((line) => [...line].length === 80));
+  assert.equal(lines.length, 5);
+  assert.ok(lines.every((line) => [...line].length === 80));
   assert.equal(lines[1]?.trim(), "reload");
   assert.equal(lines[2]?.trim(), "");
   assert.equal(lines[3]?.trim(), "Reloading Pi configuration and resources…");
-  assert.equal(lines[5], "", "leaves one row before the footer");
   assert.ok(backgrounds.every((color) => color === "toolPendingBg"));
 });
 
@@ -52,7 +51,7 @@ test("reload patch changes only Pi's exact reload container and is idempotent", 
     { children: [{ text: `\x1b[38;2;128;128;128m${PI_RELOAD_MESSAGE}\x1b[39m` }] },
     40,
   );
-  assert.equal(reload.length, 6);
+  assert.equal(reload.length, 5);
   assert.equal(reload[1]?.trim(), "reload");
   assert.equal(nativeCalls, 1, "target rendering bypasses the native border box");
   assert.deepEqual(

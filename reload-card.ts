@@ -71,7 +71,6 @@ export function renderReloadCard(
     blank,
     cardRow({ raw: rawMessage, styled: message, width: safeWidth, horizontalPadding, theme }),
     blank,
-    "",
   ];
 }
 
